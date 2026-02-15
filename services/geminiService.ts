@@ -7,12 +7,20 @@ export class GeminiService {
   private ai: any;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      console.error("API_KEY is missing. Please set it in your environment variables.");
+    }
+    this.ai = new GoogleGenAI({ apiKey: apiKey || "" });
   }
 
   async *streamDoubtSolution(history: Message[], currentMessage: string, imageBase64?: string) {
+    if (!process.env.API_KEY) {
+      yield "Error: API Key is missing. Please configure it in your Vercel project settings.";
+      return;
+    }
+
     try {
-      // Use gemini-3-flash-preview for fast multimodal processing
       const model = 'gemini-3-flash-preview';
       
       const contents: any[] = history.map(msg => ({
@@ -23,7 +31,6 @@ export class GeminiService {
       const currentParts: any[] = [{ text: currentMessage || "Please explain this IDT concept from the image." }];
       
       if (imageBase64) {
-        // Extract mime type and data from base64 string
         const [header, data] = imageBase64.split(',');
         const mimeType = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
         currentParts.push({
@@ -50,7 +57,7 @@ export class GeminiService {
 
       for await (const chunk of result) {
         const response = chunk as GenerateContentResponse;
-        yield response.text;
+        yield response.text || "";
       }
     } catch (error) {
       console.error("Gemini API Error:", error);
