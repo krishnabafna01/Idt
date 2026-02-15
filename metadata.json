@@ -1,0 +1,8 @@
+{
+  "name": " CA Final IDT Doubt Solver",
+  "description": "An expert AI-powered doubt solver for Indirect Tax (GST, Customs, FTP) designed for CA Final students, featuring exam-oriented explanations, step-by-step practical solutions, and the latest 2025/2026 amendments.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
